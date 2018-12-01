@@ -1,27 +1,17 @@
-from wcs_helper_functions import *
-
-import numpy as np
-
-import matplotlib.pyplot as plt
-
-fociDictionary = readFociData('./WCS_data_core/foci-exp.txt')
-
-namingData = readNamingData('./WCS_data_core/term.txt')
-
 # probability map
 # generates a superimposed map of all the colour maps elicited from speakers of a language,
 # for evaluation of prediction models
 
 LANGUAGE = 1
 
-def prob_map(language):
+def prob_map(data, language):
     """
     Constructs language map for each participant which
     """
     count_map = {}
-    for speaker in namingData[language]:
-        for cell in namingData[language][speaker]:
-            colour = namingData[language][speaker][cell]
+    for speaker in data[language]:
+        for cell in data[language][speaker]:
+            colour = data[language][speaker][cell]
             if cell not in count_map:
                 count_map[cell] = {colour: 1}
             else:
@@ -31,8 +21,7 @@ def prob_map(language):
                     count_map[cell][colour] += 1
     return count_map
 
-# print(prob_map(LANGUAGE))
-pmap = prob_map(LANGUAGE)
-print(pmap)
-
-    
+# returns score of how well the prediction_map matches the prob_map
+def score(prob_map, prediction_map):
+    pass
+ 

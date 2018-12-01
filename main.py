@@ -1,0 +1,16 @@
+from PrathUnits import *
+from PiperUnits import *
+from wcs_helper_functions import *
+
+import numpy as np
+
+import matplotlib.pyplot as plt
+
+fociDictionary = readFociData('./WCS_data_core/foci-exp.txt')
+
+namingData = readNamingData('./WCS_data_core/term.txt')
+if __name__ == '__main__':
+
+    pmap = prob_map(namingData, 1)
+    cmap = consolidate_map(pmap)
+    print(cmap)

@@ -1,13 +1,3 @@
-from wcs_helper_functions import *
-
-import numpy as np
-
-import matplotlib.pyplot as plt
-
-fociDictionary = readFociData('./WCS_data_core/foci-exp.txt')
-
-namingData = readNamingData('./WCS_data_core/term.txt')
-
 # probability map
 # generates a superimposed map of all the colour maps elicited from speakers of a language,
 # for evaluation of prediction models
@@ -15,6 +5,7 @@ namingData = readNamingData('./WCS_data_core/term.txt')
 LANGUAGE = 1
 
 # generates majority colour map for a specified language
+# cmap should be randomized on ties
 def consolidate_map(pmap):
     cmap = {}
     for cell in pmap.keys():
@@ -27,7 +18,6 @@ def consolidate_map(pmap):
                 max_votes = num_vote
         cmap[cell] = {max_colour : max_votes}
     return cmap
-print(consolidate_map(pmap))
 
 # prototype model stuff
 def universal_terms(language):
