@@ -9,32 +9,10 @@ fociDictionary = readFociData('./WCS_data_core/foci-exp.txt')
 namingData = readNamingData('./WCS_data_core/term.txt')
 
 # probability map
-# generates a superimposed map of all the colour maps elicited from speakers of a language, 
+# generates a superimposed map of all the colour maps elicited from speakers of a language,
 # for evaluation of prediction models
 
 LANGUAGE = 1
-
-def prob_map(language):
-    """
-    Constructs language map for each participant which
-    """
-    count_map = {}
-    for speaker in namingData[language]:
-        for cell in namingData[language][speaker]:
-            colour = namingData[language][speaker][cell]
-            if cell not in count_map:
-                count_map[cell] = {colour: 1}
-            else:
-                if colour not in count_map[cell]:
-                    count_map[cell][colour] = 1
-                else:
-                    count_map[cell][colour] += 1
-    return count_map
-
-# print(prob_map(LANGUAGE))
-pmap = prob_map(LANGUAGE)
-print(pmap)
-
 
 # generates majority colour map for a specified language
 def consolidate_map(pmap):
@@ -50,3 +28,21 @@ def consolidate_map(pmap):
         cmap[cell] = {max_colour : max_votes}
     return cmap
 print(consolidate_map(pmap))
+
+# prototype model stuff
+def universal_terms(language):
+    """
+    Generates a list of colour terms used by any of the speakers of a given language
+    """
+    universal_terms = set()
+    for speaker in fociDictionary[language]:
+        for term in fociDictionary[language][speaker]:
+            universal_terms.add(term)
+    return list(universal_terms)
+
+
+def prototype_predict(cmap):
+    """
+    
+    """
+    terms = universal_terms(language)
