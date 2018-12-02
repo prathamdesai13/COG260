@@ -25,3 +25,11 @@ def prob_map(data, language):
 def score(prob_map, prediction_map):
     pass
  
+def make_foci_exemplars(data, language):
+    pass
+
+def make_foci_prototypes(data, language):
+    pass
+
+def evaluate(prediction_map, pmap):
+    pass
