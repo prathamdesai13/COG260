@@ -21,8 +21,8 @@ def universal_terms(data, language):
     Generates a list of colour terms used by any of the speakers of a given language
     """
     universal_terms = set()
-    for speaker in fociDictionary[data][language]:
-        for term in fociDictionary[data][language][speaker]:
+    for speaker in data[language]:
+        for term in data[language][speaker]:
             universal_terms.add(term)
     return list(universal_terms)
 
