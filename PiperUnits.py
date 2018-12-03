@@ -26,7 +26,8 @@ def prob_map(data, language):
 # returns score of how well the prediction_map matches the prob_map
 def score(prob_map, prediction_map):
     score = 0
-    for cell in range(1, 331):
+    num_cells = len(prediction_map)
+    for cell in range(num_cells):
         if prediction_map[cell] in prob_map[cell]:
             score += prob_map[prediction_map[cell]]
  

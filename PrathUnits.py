@@ -66,7 +66,7 @@ def prototype_predict(prototypes):
     based on distance from prototype cells
     """
     num_cells = 330
-    out_map = np.zeros(num_cells)
+    out_map = [None for _ in range(num_cells)]
     for cell in range(num_cells):
         out_map[cell] = assign_colour(cell, prototypes)
     return out_map
