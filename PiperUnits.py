@@ -3,6 +3,10 @@
 # for evaluation of prediction models
 
 from PrathUnits import universal_terms
+from wcs_helper_functions import readChipData, readClabData
+
+cnumDictionary, cnameDictionary = wcs.readChipData('./WCS_data_core/chip.txt')
+clabDictionary = readClabData('./WCS_data_core/cnum-vhcm-lab-new.txt')
 
 LANGUAGE = 1
 
@@ -41,7 +45,18 @@ def make_foci_exemplars(data, language):
     return foci_exemplars
 
 def make_foci_prototypes(data, language):
-    pass
+    all_foci = make_foci_exemplars(data, language)
+    cielab_foci = {term: [] for term in all_foci}
+    for term in all_foci:
+        foci = all_foci[term]
+        for focus in foci:
+            cielab_foci[term].append(clabDictionary[cnumDictionary[term]])
+
+def tuple_average(tuple_list):
+    num_tup = float(len(tuple_list))
+    tup_length = len(tuple_list[0])
+    return tuple(sum(n[i] for n in tuple_list)/num_tup for i in range(tup_length))
+    
 
 if __name__ == "__main__":
     pass
