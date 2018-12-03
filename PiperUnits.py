@@ -2,6 +2,8 @@
 # generates a superimposed map of all the colour maps elicited from speakers of a language,
 # for evaluation of prediction models
 
+from PrathUnits import universal_terms
+
 LANGUAGE = 1
 
 def prob_map(data, language):
@@ -23,13 +25,15 @@ def prob_map(data, language):
 
 # returns score of how well the prediction_map matches the prob_map
 def score(prob_map, prediction_map):
-    pass
+    score = 0
+    for cell in range(1, 331):
+        if prediction_map[cell] in prob_map[cell]:
+            score += prob_map[prediction_map[cell]]
  
 def make_foci_exemplars(data, language):
-    pass
+    for term 
+    for speaker in data[language]:
+        pass
 
 def make_foci_prototypes(data, language):
-    pass
-
-def evaluate(prediction_map, pmap):
     pass
