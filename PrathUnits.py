@@ -44,7 +44,6 @@ def similarity_func(x, y):
 # all cells exemplar prediction function
 # uses a similarity function to categorize new data points
 def all_cells_exemplar_predict(cmap):
-
     pass
 
 
