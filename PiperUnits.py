@@ -30,10 +30,10 @@ def score(prob_map, prediction_map):
         if prediction_map[cell] in prob_map[cell]:
             score += prob_map[prediction_map[cell]]
  
-def make_foci_exemplars(data, language):
-    for term 
-    for speaker in data[language]:
-        pass
+# def make_foci_exemplars(data, language):
+#     for term 
+#     for speaker in data[language]:
+#         pass
 
 def make_foci_prototypes(data, language):
     pass
