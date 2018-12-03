@@ -4,12 +4,12 @@
 # Jessie Salas
 
 import numpy as np
-from matplotlib.colors import LinearSegmentedColormap
-import matplotlib.pyplot as plt
+# from matplotlib.colors import LinearSegmentedColormap
+# import matplotlib.pyplot as plt
 import re
 from random import random
 import numpy as np
-from matplotlib import gridspec
+# from matplotlib import gridspec
 import warnings
 import string
 warnings.filterwarnings('ignore')

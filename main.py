@@ -14,5 +14,9 @@ if __name__ == '__main__':
     # cmap = consolidate_map(pmap)
     # print(cmap)
     
-    print(universal_terms(namingData, 1))
-    print(universal_terms(fociDictionary, 1))
+    # print(universal_terms(namingData, 1))
+    # print(universal_terms(fociDictionary, 1))
+    
+    pmap = prob_map(namingData, 1)
+    cmap = consolidate_map(pmap)
+    print(cmap)
