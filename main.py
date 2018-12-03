@@ -4,8 +4,6 @@ from wcs_helper_functions import *
 
 import numpy as np
 
-import matplotlib.pyplot as plt
-
 fociDictionary = readFociData('./WCS_data_core/foci-exp.txt')
 
 namingData = readNamingData('./WCS_data_core/term.txt')
