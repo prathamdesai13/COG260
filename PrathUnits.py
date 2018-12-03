@@ -1,6 +1,11 @@
 import numpy as np
 import scipy as sp
 from random import shuffle
+from wcs_helper_functions import *
+
+def load_munsell():
+
+    return readChipData('./WCS_data_core/chip.txt')
 
 # generates majority colour map for a specified language
 # cmap should be randomized on ties
@@ -47,16 +52,25 @@ def all_cells_exemplar_predict(cmap):
     pass
 
 
-def assign_colour(cell, prototypes):
+def assign_colour(cell_coord, prototypes, func):
 
     min_dist = 10000000 # some very big distance
     best_fit_colour = None
     for term in prototypes.keys():
-        dist = euclidean_dist(cell, prototypes[term])
+        dist = func(cell_coord, prototypes[term])
         if min_dist > dist:
             min_dist = dist
             best_fit_colour = term
     return best_fit_colour
+
+def corresponding_munsell(cell):
+    """
+    Cell is a value in [0, 330)
+    """
+    munsell_info = load_munsell()
+    index_to_coord = munsell_info[1][cell + 1]
+    return (index_to_coord[0]).join(str(index_to_coord[1]))
+
 
 def prototype_predict(prototypes):
     """
@@ -67,5 +81,20 @@ def prototype_predict(prototypes):
     num_cells = 330
     out_map = [None for _ in range(num_cells)]
     for cell in range(num_cells):
-        out_map[cell] = assign_colour(cell, prototypes)
+        # write function that takes the cell, corresponding to munsell color chart, adn then convert to cielab coord
+        # cell_coord = munsell2ceilab(corresponding_munsell(cell)) # need to implement corresponding_munsell
+        cell_coord = None
+        out_map[cell] = assign_colour(cell_coord, prototypes, euclidean_dist)
     return out_map
+
+def cielab2cell(cielab_coord):
+    """
+    converts cielab coordinate to a cell in munsell color chips [0, 330)
+    """
+    pass
+
+def foci_predict(exemplars):
+    """
+    exemplars: key=colour term , value=list of cells
+    """
+    pass
