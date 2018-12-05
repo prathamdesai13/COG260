@@ -57,7 +57,7 @@ def all_cells_exemplar_predict(cmap, language):
         colour_term = cmap[cell]
         if colour_term not in sims:
             sims[colour_term] = 0
-    print(sims)
+
     for cell in range(num_cells):
         (n1, n2, n3) = clabDictionary[cell + 1]
         clab_coord = (float(n1), float(n2), float(n3))
@@ -67,13 +67,11 @@ def all_cells_exemplar_predict(cmap, language):
                     (n1, n2, n3) = clabDictionary[cell_i]
                     cell_i_coord = (float(n1), float(n2), float(n3))
                     sims[term] += similarity_func(clab_coord, cell_i_coord)
-        max_key = max(sims, sims.get)
+        max_key = max(sims, key=lambda k: sims[k])
         out_map[cell] = max_key
-    print(sims)
+        for keys in sims.keys():
+            sims[keys] = 0
     return out_map
-
-
-
 
 def assign_colour(cell_coord, prototypes, func):
 
