@@ -5,16 +5,14 @@
 from PrathUnits import universal_terms
 from wcs_helper_functions import readChipData, readClabData
 
-cnumDictionary, cnameDictionary = wcs.readChipData('./WCS_data_core/chip.txt')
+cnumDictionary, cnameDictionary = readChipData('./WCS_data_core/chip.txt')
 clabDictionary = readClabData('./WCS_data_core/cnum-vhcm-lab-new.txt')
 
 LANGUAGE = 1
 
 def prob_map(data, language):
-    """
-    Constructs language map for each participant which
-    """
     count_map = {}
+    prob_map = {}
     for speaker in data[language]:
         for cell in data[language][speaker]:
             colour = data[language][speaker][cell]
@@ -25,15 +23,23 @@ def prob_map(data, language):
                     count_map[cell][colour] = 1
                 else:
                     count_map[cell][colour] += 1
-    return count_map
+                    
+    for cell in count_map:
+        total = sum(list(count_map[cell].values()))
+        prob_map[cell] = {colour: (count_map[cell][colour]) / total for colour in count_map[cell]}
+    return prob_map
 
 # returns score of how well the prediction_map matches the prob_map
-def score(prob_map, prediction_map):
+def evaluate(prediction_map, prob_map):
     score = 0
     num_cells = len(prediction_map)
-    for cell in range(num_cells):
-        if prediction_map[cell] in prob_map[cell]:
-            score += prob_map[prediction_map[cell]]
+    for cell in range(1, 331):
+        prediction = prediction_map[cell]
+        print("prediction:" + prediction)
+        print(prediction)
+        if prediction in prob_map[cell]:
+            score = prob_map[prediction]
+    return score
  
 def make_foci_exemplars(data, language):
     terms = universal_terms(data, language)

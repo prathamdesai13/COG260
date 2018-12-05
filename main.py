@@ -10,12 +10,9 @@ namingData = readNamingData('./WCS_data_core/term.txt')
 
 if __name__ == '__main__':
     LANGUAGE = 2
-
-    # pmap = prob_map(namingData, 1)
-    # cmap = consolidate_map(pmap)
-    # print(cmap)
-    # print(fociDictionary[LANGUAGE])
-    # print(make_foci_exemplars(fociDictionary, LANGUAGE))
-    cnumDictionary, cnameDictionary = readChipData('./WCS_data_core/chip.txt')
-    clabDictionary = readClabData('./WCS_data_core/cnum-vhcm-lab-new.txt')
-    print(clabDictionary[cnumDictionary["E16"]])
+    pmap = prob_map(namingData, LANGUAGE)
+    print("pmap:\n" + str(pmap))
+    cmap = consolidate_map(pmap)
+    print()
+    print("cmap:\n" + str(cmap))
+    print(evaluate(cmap, pmap))
