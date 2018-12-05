@@ -50,7 +50,7 @@ def similarity_func(x, y):
 # uses a similarity function to categorize new data points
 def all_cells_exemplar_predict(cmap, language):
     num_cells = 330
-    out_map = [None for _ in range(num_cells)]
+    out_map = {i + 1 : None for i in range(num_cells)}
     sims = {}
     clabDictionary = readClabData('./WCS_data_core/cnum-vhcm-lab-new.txt')
     for cell in cmap.keys():
@@ -68,7 +68,7 @@ def all_cells_exemplar_predict(cmap, language):
                     cell_i_coord = (float(n1), float(n2), float(n3))
                     sims[term] += similarity_func(clab_coord, cell_i_coord)
         max_key = max(sims, key=lambda k: sims[k])
-        out_map[cell] = max_key
+        out_map[cell + 1] = max_key
         for keys in sims.keys():
             sims[keys] = 0
     return out_map
@@ -100,11 +100,11 @@ def prototype_predict(prototypes):
     based on distance from prototype cells
     """
     num_cells = 330
-    out_map = [None for _ in range(num_cells)]
+    out_map = { i + 1 : None for i in range(num_cells)}
     clabDictionary = readClabData('./WCS_data_core/cnum-vhcm-lab-new.txt')
     for cell in range(num_cells):
         cell_coord = clabDictionary[cell]
-        out_map[cell] = assign_colour(cell_coord, prototypes, euclidean_dist)
+        out_map[cell + 1] = assign_colour(cell_coord, prototypes, euclidean_dist)
     return out_map
 
 def foci_predict(exemplars):
