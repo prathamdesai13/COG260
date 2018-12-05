@@ -48,7 +48,7 @@ def similarity_func(x, y):
 
 # all cells exemplar prediction function
 # uses a similarity function to categorize new data points
-def all_cells_exemplar_predict(cmap, language):
+def all_cells_exemplar_predict(cmap):
     num_cells = 330
     out_map = {i + 1 : None for i in range(num_cells)}
     sims = {}
@@ -57,13 +57,13 @@ def all_cells_exemplar_predict(cmap, language):
         colour_term = cmap[cell]
         if colour_term not in sims:
             sims[colour_term] = 0
-
+    
     for cell in range(num_cells):
         (n1, n2, n3) = clabDictionary[cell + 1]
         clab_coord = (float(n1), float(n2), float(n3))
         for term in sims:
             for cell_i in cmap.keys():
-                if term == cmap[cell_i]:
+                if term == cmap[cell_i] and cell_i != cell:
                     (n1, n2, n3) = clabDictionary[cell_i]
                     cell_i_coord = (float(n1), float(n2), float(n3))
                     sims[term] += similarity_func(clab_coord, cell_i_coord)
