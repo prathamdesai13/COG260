@@ -35,11 +35,9 @@ def evaluate(prediction_map, prob_map):
     num_cells = len(prediction_map)
     for cell in range(1, 331):
         prediction = prediction_map[cell]
-        print("prediction:" + prediction)
-        print(prediction)
         if prediction in prob_map[cell]:
-            score = prob_map[prediction]
-    return score
+            score += prob_map[cell][prediction]
+    return score / 330
  
 def make_foci_exemplars(data, language):
     terms = universal_terms(data, language)

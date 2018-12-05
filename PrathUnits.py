@@ -63,7 +63,7 @@ def all_cells_exemplar_predict(cmap):
         clab_coord = (float(n1), float(n2), float(n3))
         for term in sims:
             for cell_i in cmap.keys():
-                if term == cmap[cell_i] and cell_i != cell:
+                if term == cmap[cell_i] and cell_i != (cell + 1):
                     (n1, n2, n3) = clabDictionary[cell_i]
                     cell_i_coord = (float(n1), float(n2), float(n3))
                     sims[term] += similarity_func(clab_coord, cell_i_coord)
@@ -74,7 +74,6 @@ def all_cells_exemplar_predict(cmap):
     return out_map
 
 def assign_colour(cell_coord, prototypes, func):
-
     min_dist = 10000000 # some very big distance
     best_fit_colour = None
     for term in prototypes.keys():
