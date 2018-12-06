@@ -74,7 +74,6 @@ def all_cells_exemplar_predict(cmap):
     return out_map
 
 def assign_colour(cell_coord, prototypes, func):
-
     min_dist = 10000000 # some very big distance
     best_fit_colour = None
     for term in prototypes.keys():
