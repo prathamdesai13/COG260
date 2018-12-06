@@ -63,7 +63,7 @@ def all_cells_exemplar_predict(cmap):
         clab_coord = (float(n1), float(n2), float(n3))
         for term in sims:
             for cell_i in cmap.keys():
-                if term == cmap[cell_i] and cell_i != cell:
+                if term == cmap[cell_i] and cell_i != (cell + 1):
                     (n1, n2, n3) = clabDictionary[cell_i]
                     cell_i_coord = (float(n1), float(n2), float(n3))
                     sims[term] += similarity_func(clab_coord, cell_i_coord)
@@ -93,7 +93,7 @@ def corresponding_munsell(cell):
     return str(index_to_coord[0] + str(index_to_coord[1]))
 
 
-def prototype_predict(prototypes):
+def foci_prototype_predict(prototypes):
     """
     Prototypes is a dictionary of key = colour label, and value = cell
     Iterate through a blank map of cells, assign each cell a colour
@@ -103,12 +103,35 @@ def prototype_predict(prototypes):
     out_map = { i + 1 : None for i in range(num_cells)}
     clabDictionary = readClabData('./WCS_data_core/cnum-vhcm-lab-new.txt')
     for cell in range(num_cells):
-        cell_coord = clabDictionary[cell]
+        (n1, n2, n3) = clabDictionary[cell + 1]
+        cell_coord = (float(n1), float(n2), float(n3))
         out_map[cell + 1] = assign_colour(cell_coord, prototypes, euclidean_dist)
     return out_map
 
-def foci_predict(exemplars):
+def foci_exemplar_predict(exemplars):
     """
     exemplars: key=colour term , value=list of cells
     """
-    pass
+
+    num_cells = 330
+    out_map = { i + 1 : None for i in range(num_cells)}
+    clabDictionary = readClabData('./WCS_data_core/cnum-vhcm-lab-new.txt')
+    sims = {}
+    for term in exemplars.keys():
+        if colour_term not in sims:
+            sims[colour_term] = 0
+
+    for cell in range(num_cells):
+        (n1, n2, n3) = clabDictionary[cell + 1]
+        cell_coord = (float(n1), float(n2), float(n3))
+        for term in sims:
+            for foci_cell in exemplars[term]:
+                if foci_cell != (cell + 1):
+                    (n1, n2, n3) = clabDictionary[foci_cell]
+                    foci_coord = (float(n1), float(n2), float(n3))
+                    sims[term] += similarity_func(cell_coord, foci_coord)
+        max_key = max(sims, key=lambda k: sims[k])
+        out_map[cell + 1] = max_key
+        for keys in sims.keys():
+            sims[keys] = 0
+    return out_map
