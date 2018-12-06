@@ -54,9 +54,8 @@ def make_foci_prototypes(data, language):
     all_foci = make_foci_exemplars(data, language)
     cielab_foci = {term: [] for term in all_foci}
     for term in all_foci:
-        foci = all_foci[term]
-        for focus in foci:
-            cielab_foci[term].append(clabDictionary[cnumDictionary[term]])
+        foci = [clabDictionary[cnumDictionary[cell]] for cell in all_foci[term]]
+    print(foci)
 
 def tuple_average(tuple_list):
     num_tup = float(len(tuple_list))
