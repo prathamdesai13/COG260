@@ -21,7 +21,7 @@ if __name__ == '__main__':
         
         print(f"{evaluate(all_cells_exemplar_predict(cmap), pmap)} - ALL-CELLS EXEMPLAR")
         
-        print(f"{evaluate(foci_exemplar_predict(fex, pmap))} - FOCI EXEMPLAR")
+        print(f"{evaluate(foci_exemplar_predict(fex), pmap)} - FOCI EXEMPLAR")
 
         print()
     # foci_exemplars = make_foci_exemplars(fociDictionary, 1)

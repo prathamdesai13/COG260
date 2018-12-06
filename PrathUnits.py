@@ -116,7 +116,7 @@ def foci_exemplar_predict(exemplars):
     out_map = { i + 1 : None for i in range(num_cells)}
     clabDictionary = readClabData('./WCS_data_core/cnum-vhcm-lab-new.txt')
     sims = {}
-    for term in exemplars.keys():
+    for colour_term in exemplars.keys():
         if colour_term not in sims:
             sims[colour_term] = 0
 
