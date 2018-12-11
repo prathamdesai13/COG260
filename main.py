@@ -9,20 +9,23 @@ fociDictionary = readFociData('./WCS_data_core/foci-exp.txt')
 namingData = readNamingData('./WCS_data_core/term.txt')
 
 if __name__ == '__main__':
-    for LANGUAGE in range(1, 101):
+    performances = []
+    for LANGUAGE in range(1, 111):
         pmap = prob_map(namingData, LANGUAGE)
         cmap = consolidate_map(pmap)
-        fex = make_foci_exemplars(fociDictionary, LANGUAGE)
-        print(f"Language {LANGUAGE}:")
+        # fex = make_foci_exemplars(fociDictionary, LANGUAGE)
         
-        print(f"Unique terms: {len(universal_terms(fociDictionary, LANGUAGE))}")
+        # print(f"Language {LANGUAGE}:")
         
-        print(f"{evaluate(cmap, pmap)} - BASELINE")
-        
-        print(f"{evaluate(all_cells_exemplar_predict(cmap), pmap)} - ALL-CELLS EXEMPLAR")
-        
-        print(f"{evaluate(foci_exemplar_predict(fex), pmap)} - FOCI EXEMPLAR")
+        # print(f"Unique terms: {len(universal_terms(fociDictionary, LANGUAGE))}")
+        baseline = evaluate(cmap, pmap)
+        # print(f"{baseline} - BASELINE")
+        ACE = evaluate(all_cells_exemplar_predict(cmap), pmap)
+        # print(f"{ACE} - ALL-CELLS EXEMPLAR")
+        performances.append(ACE / baseline)
 
-        print()
+        print(LANGUAGE)
+    print("Average performance over all languages:")
+    print(np.mean(performances))
     # foci_exemplars = make_foci_exemplars(fociDictionary, 1)
     # print(foci_exemplars)

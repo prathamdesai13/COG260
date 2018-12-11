@@ -3,12 +3,12 @@
 # for evaluation of prediction models
 
 from PrathUnits import universal_terms
-from wcs_helper_functions import readChipData, readClabData
+from wcs_helper_functions import readChipData, readClabData,  readFociData
+import string
 
 cnumDictionary, cnameDictionary = readChipData('./WCS_data_core/chip.txt')
 clabDictionary = readClabData('./WCS_data_core/cnum-vhcm-lab-new.txt')
-
-LANGUAGE = 1
+foci_data = readFociData('./WCS_data_core/foci-exp.txt')
 
 def prob_map(data, language):
     count_map = {}
@@ -39,27 +39,39 @@ def evaluate(prediction_map, prob_map):
             score += prob_map[cell][prediction]
     return score / 330
  
-def make_foci_exemplars(data, language):
+def make_foci_exemplars(data, language):            # FOCI EXEMPLARS
     terms = universal_terms(data, language)
     foci_exemplars = {term: [] for term in terms}
     for speaker in data[language]:
         for term in terms:
             if term in data[language][speaker]:
-                foci_exemplars[term] += data[language][speaker][term]
+                for cell in data[language][speaker][term]:
+                    foci_exemplars[term].append(float_tuple(clabDictionary[cnumDictionary[cell.replace(":", "")]]))
     return foci_exemplars
 
-def make_foci_prototypes(data, language):
-    all_foci = make_foci_exemplars(data, language)
-    cielab_foci = {term: [] for term in all_foci}
-    for term in all_foci:
-        foci = [clabDictionary[cnumDictionary[cell]] for cell in all_foci[term]]
-    print(foci)
+def make_foci_prototypes(data, language):           # FOCI PROTOTYPES
+    foci_exemplars = make_foci_exemplars(data, language)
+    foci_prototypes = {}
+    for term in foci_exemplars:
+        foci_prototypes[term] = tuple_average(foci_exemplars[term])
+    return foci_prototypes
 
 def tuple_average(tuple_list):
     num_tup = float(len(tuple_list))
     tup_length = len(tuple_list[0])
     return tuple(sum(n[i] for n in tuple_list)/num_tup for i in range(tup_length))
+
+def float_tuple(string_tuple):
+    n1, n2, n3 = string_tuple
+    return (float(n1), float(n2), float(n3))
     
 
 if __name__ == "__main__":
-    pass
+    # print(clabDictionary["D9"])
+    
+    LANGUAGE = 3
+    
+    exemplars = make_foci_exemplars(foci_data, LANGUAGE)
+    print(exemplars)
+    prototypes = make_foci_prototypes(foci_data, LANGUAGE)
+    print(prototypes)
