@@ -49,11 +49,10 @@ def make_foci_exemplars(data, language):            # FOCI EXEMPLARS
                     foci_exemplars[term].append(float_tuple(clabDictionary[cnumDictionary[cell.replace(":", "")]]))
     return foci_exemplars
 
-def make_foci_prototypes(data, language):           # FOCI PROTOTYPES
-    foci_exemplars = make_foci_exemplars(data, language)
+def make_foci_prototypes(exemplar_data):           # FOCI PROTOTYPES
     foci_prototypes = {}
-    for term in foci_exemplars:
-        foci_prototypes[term] = tuple_average(foci_exemplars[term])
+    for term in exemplar_data:
+        foci_prototypes[term] = tuple_average(exemplar_data[term])
     return foci_prototypes
 
 def tuple_average(tuple_list):
