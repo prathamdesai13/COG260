@@ -125,9 +125,7 @@ def foci_exemplar_predict(exemplars):
         cell_coord = (float(n1), float(n2), float(n3))
         for term in sims:
             for foci_cell in exemplars[term]:
-                (n1, n2, n3) = clabDictionary[foci_cell]
-                foci_coord = (float(n1), float(n2), float(n3))
-                sims[term] += similarity_func(cell_coord, foci_coord)
+                sims[term] += similarity_func(cell_coord, foci_cell)
         max_key = max(sims, key=lambda k: sims[k]) # pick out the colour term with highest similarity
         out_map[cell + 1] = max_key
         for keys in sims.keys():

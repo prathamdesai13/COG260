@@ -29,13 +29,13 @@ if __name__ == '__main__':
         
         # FOCI EXEMPLAR
         foci_exemplars = make_foci_exemplars(foci_data, LANGUAGE)
-        FE = evaluate(foci_exemplar_predict(foci_exemplars))
+        FE = evaluate(foci_exemplar_predict(foci_exemplars), pmap)
         print(f"{FE} - FOCI EXEMPLAR")
         FE_performances.append(FE / baseline)
         
         # FOCI PROTOTYPE
         foci_prototypes = make_foci_prototypes(foci_exemplars)
-        FP = evaluate(foci_prototype_predict(foci_prototypes))
+        FP = evaluate(foci_prototype_predict(foci_prototypes), pmap)
         print(f"{FP} - FOCI PROTOTYPE")
         FP_performances.append(FP / baseline)
     
