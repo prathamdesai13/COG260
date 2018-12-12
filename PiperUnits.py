@@ -10,6 +10,7 @@ cnumDictionary, cnameDictionary = readChipData('./WCS_data_core/chip.txt')
 clabDictionary = readClabData('./WCS_data_core/cnum-vhcm-lab-new.txt')
 foci_data = readFociData('./WCS_data_core/foci-exp.txt')
 
+# returns a a p-map for a specified language
 def prob_map(data, language):
     count_map = {}
     prob_map = {}
@@ -29,7 +30,7 @@ def prob_map(data, language):
         prob_map[cell] = {colour: (count_map[cell][colour]) / total for colour in count_map[cell]}
     return prob_map
 
-# returns score of how well the prediction_map matches the prob_map
+# returns score of how well a prediction_map matches a prob_map
 def evaluate(prediction_map, prob_map):
     score = 0
     num_cells = len(prediction_map)
@@ -38,7 +39,8 @@ def evaluate(prediction_map, prob_map):
         if prediction in prob_map[cell]:
             score += prob_map[cell][prediction]
     return score / 330
- 
+
+# Produces the input for foci exemplar model based on foci data of a given language
 def make_foci_exemplars(data, language):            # FOCI EXEMPLARS
     terms = universal_terms(data, language)
     foci_exemplars = {term: [] for term in terms}
@@ -49,28 +51,21 @@ def make_foci_exemplars(data, language):            # FOCI EXEMPLARS
                     foci_exemplars[term].append(float_tuple(clabDictionary[cnumDictionary[cell.replace(":", "")]]))
     return foci_exemplars
 
-def make_foci_prototypes(exemplar_data):           # FOCI PROTOTYPES
+# Averages Foci exemplars into universal foci prototypes
+def make_foci_prototypes(exemplar_data):            # FOCI PROTOTYPES
     foci_prototypes = {}
     for term in exemplar_data:
         foci_prototypes[term] = tuple_average(exemplar_data[term])
     return foci_prototypes
 
+# helper function that returns a tuple whose elements are the averages of the corresponding
+# elements of the n tuples given as inputs. Used in make_foci_prototypes
 def tuple_average(tuple_list):
     num_tup = float(len(tuple_list))
     tup_length = len(tuple_list[0])
     return tuple(sum(n[i] for n in tuple_list)/num_tup for i in range(tup_length))
 
+# helper function that converts a tuple of strings to a tuple of floats
 def float_tuple(string_tuple):
     n1, n2, n3 = string_tuple
     return (float(n1), float(n2), float(n3))
-    
-
-if __name__ == "__main__":
-    # print(clabDictionary["D9"])
-    
-    LANGUAGE = 3
-    
-    exemplars = make_foci_exemplars(foci_data, LANGUAGE)
-    print(exemplars)
-    prototypes = make_foci_prototypes(foci_data, LANGUAGE)
-    print(prototypes)
