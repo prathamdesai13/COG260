@@ -232,6 +232,7 @@ def boxplots(outputs_by_language, foci_data):
     plt.title("Model Performances by Number of Colour Terms")
     plt.xlabel("Number of Colour Terms")
     plt.ylabel("Model Performance")
+    plt.legend([box1['boxes'][0], box2['boxes'][0], box3['boxes'][0]], ['ACE', 'FE', 'FP'], loc='lower left')
     plt.show()
 
     
