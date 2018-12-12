@@ -3,10 +3,6 @@ import scipy.spatial as sp
 from random import shuffle
 from wcs_helper_functions import *
 
-def load_munsell():
-
-    return readChipData('./WCS_data_core/chip.txt')
-
 # generates majority colour map for a specified language
 # cmap should be randomized on ties
 def consolidate_map(pmap):
@@ -25,7 +21,7 @@ def consolidate_map(pmap):
         cmap[cell] = max_colours[0]
     return cmap
 
-# prototype model stuff
+# gets all terms in a specific language
 def universal_terms(data, language):
     """
     Generates a list of colour terms used by any of the speakers of a given language and given dataset
@@ -41,7 +37,7 @@ def euclidean_dist(x, y):
 
     return sp.distance.euclidean(x, y)
     
-
+# similarity function for exemplar 
 def similarity_func(x, y):
 
     return np.exp(-np.power(euclidean_dist(x, y), 2.0))
@@ -73,6 +69,7 @@ def all_cells_exemplar_predict(cmap):
             sims[keys] = 0
     return out_map
 
+# assigns colour using specified function for comparing two points
 def assign_colour(cell_coord, prototypes, func):
     min_dist = 10000000 # some very big distance
     best_fit_colour = None
@@ -83,15 +80,7 @@ def assign_colour(cell_coord, prototypes, func):
             best_fit_colour = term
     return best_fit_colour
 
-def corresponding_munsell(cell):
-    """
-    Cell is a value in [0, 330)
-    """
-    munsell_info = load_munsell()
-    index_to_coord = munsell_info[1][cell + 1]
-    return str(index_to_coord[0] + str(index_to_coord[1]))
-
-
+# prediction function for foci prototype model
 def foci_prototype_predict(prototypes):
     """
     Prototypes is a dictionary of key = colour label, and value = cell
@@ -107,6 +96,7 @@ def foci_prototype_predict(prototypes):
         out_map[cell + 1] = assign_colour(cell_coord, prototypes, euclidean_dist)
     return out_map
 
+# prediction function for foci exemplar model
 def foci_exemplar_predict(exemplars):
     """
     exemplars: key=colour term , value=list of cells
