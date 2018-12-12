@@ -16,22 +16,54 @@ FE_performances = [0.5702952842661966, 0.6533238027162267, 0.47118910424305915, 
 
 FP_performances = [0.705817540766858, 0.461758398856326, 0.7448926139339979, 0.5575595321967027, 0.6794258373205742, 0.3289727643148195, 0.604768786127168, 0.7733941316415543, 0.6319287116749728, 0.4452705493597689, 0.7287472035794191, 0.7796453353893603, 0.44660766961651915, 0.2894439967767929, 0.6308615049073061, 0.7493752231345949, 0.6214670805423949, 0.5650331125827811, 0.5998603351955311, 0.7037177541729915, 0.5462051444903149, 0.8050521691378365, 0.774760928961749, 0.6247707951325214, 0.6216104039845046, 0.6656145888129058, 0.476639519931419, 0.5127424876378855, 0.8429077468042508, 0.8456442530639289, 0.11878685762426273, 0.31126317736267795, 0.6663829787234035, 0.5916482634009235, 0.6437282229965154, 0.7662156507183706, 0.7333565096471402, 0.604075691411936, 0.5545957918050938, 0.7258561921765965, 0.579067990832697, 0.5772838499184343, 0.3185881274352502, 0.5699129488574541, 0.6735485873952191, 0.6236137177955984, 0.7190284815656132, 0.4885775862068964, 0.7248146532926293, 0.6676840900419687, 0.3050881410256405, 0.34811486618480164, 0.5305049088359044, 0.42920265113476586, 0.670082774931021, 0.5198803659394797, 0.693247126436782, 0.617353308364544, 0.43403755868544647, 0.4598839194264259, 0.2877895563407933, 0.48833888624464605, 0.12777085927770832, 0.29017501988862354, 0.7249209008002974, 0.40239043824701193, 0.4662854419823683, 0.7728491850629254, 0.5308002302820956, 0.401816530426885, 0.5475834578973591, 0.585232623846299, 0.4726153846153853, 0.8494988207547175, 0.6698145604395608, 0.17730004623208512, 0.6906714200831849, 0.6094276094276087, 0.7046045586660551, 0.6055494245625096, 0.6231910946196665, 0.4531635168447004, 0.4589409056024562, 0.5241868223519598, 0.5802376297187544, 0.5736989172196999, 0.5711043872919818, 0.536956069123465, 0.7076353092783504, 0.7636551013397457, 0.6252465483234714, 0.6184716877405175, 0.36431989063567993, 0.7243781094527362, 0.4517599854094473, 0.487079473427597, 0.42848870874348555, 0.7058934642992072, 0.6234100788922877, 0.8138179324532833, 0.7346254193067457, 0.34134615384615413, 0.27486227892142595, 0.5742587785216561, 0.7991139415755241, 0.8114472327260227, 0.7371007371007369, 0.7402764384442302, 0.3633643617021278, 0.6886218198845014]
 
+def line_of_best_fit(x, y):
+
+    return np.polyfit(x, y, deg=1)
+
+def sort_in_parallel(to_sort, indices):
+
+    return [x for _, x in sorted(zip(indices, to_sort))]
+
 if __name__ == "__main__":
-    
-    print(ACE_performances)
+
     term_sizes_list = []
     languages = []
     for language in range(1, 111):
         term_sizes_list.append(len(universal_terms(foci_data, language)))
         languages.append(language)
     
-    sorted_ace = [x for _, x in sorted(zip(term_sizes_list, ACE_performances))]
-    sorted_fe = [x for _, x in sorted(zip(term_sizes_list, FE_performances))]
-    sorted_fp = [x for _, x in sorted(zip(term_sizes_list, FP_performances))]
-    sorted_languages = [x for _, x in sorted(zip(term_sizes_list, languages))]
-    term_sizes_list.sort()
-    plt.scatter(range(1, 111), sorted_ace)
-    plt.scatter(range(1, 111), sorted_fe)
-    plt.scatter(range(1, 111), sorted_fp)
+    # each performance list is sorted such that the ith performance value corresponds
+    # to the language with the ith smallest number of terms
+    sorted_ace = sort_in_parallel(ACE_performances, term_sizes_list)
+    sorted_fe = sort_in_parallel(FE_performances, term_sizes_list)
+    sorted_fp = sort_in_parallel(FP_performances, term_sizes_list)
+    sorted_languages = sort_in_parallel(languages, term_sizes_list)
+
+    # plotted against range 1 -> 111 to spread out and visualize sorted performance values
+    spread = range(1, 111)
+    scatter_ace = plt.scatter(spread, sorted_ace)
+    scatter_fe = plt.scatter(spread, sorted_fe)
+    scatter_fp = plt.scatter(spread, sorted_fp)
+
+    # line of best fit for performance for all 3 models
+    m_ace, b_ace = line_of_best_fit(spread, sorted_ace)
+
+    plt.plot(spread, np.dot(m_ace, spread) + b_ace)
+
+    m_fe, b_fe = line_of_best_fit(spread, sorted_fe)
+    plt.plot(spread, np.dot(m_fe, spread) + b_fe)
+
+    m_fp, b_fp = line_of_best_fit(spread, sorted_fp)
+    plt.plot(spread, np.dot(m_fp, spread) + b_fp)
+
+    # define legend and plot
+    plt.legend((scatter_ace, scatter_fe, scatter_fp),
+           ('ACE', 'FE', 'FP'),
+           scatterpoints=1,
+           loc='lower left',
+           ncol=3,
+           fontsize=8)
+
     plt.show()
+
     
