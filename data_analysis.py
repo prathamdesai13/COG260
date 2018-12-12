@@ -28,7 +28,9 @@ def get_model_scores(namingData, foci_data):
     FE_performances = []
     FP_performances = []
     FE_beats_FP = 0
+    FE_beats_FP_languages = []
     FP_beats_FE = 0
+    FP_beats_FE_languages = []
     
     for LANGUAGE in range(1, 111):
         print(f"--------------------- Language {LANGUAGE} ---------------------------")
@@ -60,6 +62,23 @@ def get_model_scores(namingData, foci_data):
         print(f"{FP} - FOCI PROTOTYPE")
         print()
         FP_performances.append(FP / baseline)
+
+        if FE < FP:
+            FE_beats_FP += 1
+            FE_beats_FP_languages.append(LANGUAGE)
+        elif FP < FE:
+            FP_beats_FE += 1
+            FP_beats_FE_languages.append(LANGUAGE)
+
+    print(f"{np.mean(ACE_performances)} - PERFORMANCE OF ALL CELLS EXEMPLAR")
+    print(f"{np.mean(FE_performances)} - PERFORMANCE OF FOCI EXEMPLAR")
+    print(f"{np.mean(FP_performances)} - PERFORMANCE OF FOCI PROTOTYPE")
+
+    print(f"Foci Exemplar beat Foci Prototype {FE_beats_FP} times")
+    print(f"Foci Prototype beat Foci Exemplar {FP_beats_FE} times")
+
+    print("Languages that FE beat FP: ", FE_beats_FP_languages)
+    print("Languages that FP beat FE: ", FP_beats_FE_languages)
     return ACE_performances, FE_performances, FP_performances
 
 def pipeline(naming_data, foci_data, language):
@@ -87,7 +106,7 @@ def pipeline(naming_data, foci_data, language):
     foci_prototypes  = make_foci_prototypes(foci_exemplars)
     FP_map = foci_prototype_predict(foci_prototypes)
     outputs['FP'] = FP_map
-
+    
     return outputs
 
 def calculate_performance_scores(outputs):
@@ -109,7 +128,7 @@ def prepare_and_plot_sorted_scores(performance_scores, foci_data):
     term_sizes_list = []
     for language in range(1, 111):
         term_sizes_list.append(len(universal_terms(foci_data, language)))
-        
+
     sorted_ace = sort_in_parallel(performance_scores['ACE'], term_sizes_list)
     sorted_fe = sort_in_parallel(performance_scores['FE'], term_sizes_list)
     sorted_fp = sort_in_parallel(performance_scores['FP'], term_sizes_list)
@@ -159,7 +178,7 @@ if __name__ == "__main__":
     #     outputs = pipeline(namingData, foci_data, 1)
     #     outputs_by_language[language] = outputs
     # performance_scores = calculate_performance_scores(outputs_by_language)
-    # ACE_performances, FE_performances, FP_performances = get_model_scores(namingData, foci_data)
+    ACE_performances, FE_performances, FP_performances = get_model_scores(namingData, foci_data)
     # print(ACE_performances)
     # print("-------------------------------------------")
     # print(FE_performances)

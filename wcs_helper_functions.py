@@ -240,7 +240,7 @@ def readClabData(clabFilePath):
     return clab
 
 
-def plotValues(values, title, figx = 80, figy = 40):
+def plotValues(values, title, figx = 80, figy = 40, seq=1):
     """Takes a numpy array or matrix and produces a color map that shows variation in the values of the array/matrix."""
     """values: array or matrix of numbers
        figx: length of plot on the x axis, defaults to 10
@@ -259,7 +259,7 @@ def plotValues(values, title, figx = 80, figy = 40):
     values = np.array(lst)
     #plot
     ha = 'center'
-    fig = plt.figure(figsize=((figx,figy)))
+    fig = plt.figure(seq, figsize=((figx,figy)))
     fig.suptitle(title, fontsize=40)
     gs = gridspec.GridSpec(2, 2, width_ratios=[1, 8], height_ratios=[1,1]) 
     ax1 = plt.subplot(gs[1])
@@ -272,7 +272,7 @@ def plotValues(values, title, figx = 80, figy = 40):
     ax1.yaxis.set(ticks=np.arange(0.5, len(labels)), ticklabels=labels)
     ax2.yaxis.set(ticks=np.arange(0.5, len(["A"]+labels+["J"])), ticklabels=(["A"]+labels+["J"])[::-1])
     ax1.xaxis.set(ticks=np.arange(0.5, 40), ticklabels=np.arange(1, 41))
-    plt.show()
+    
 
 def generate_random_values(ar):
     """Takes in an array of terms and returns a dictionary that maps terms to random values between 0 and 1"""
