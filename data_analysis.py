@@ -23,46 +23,121 @@ def sort_in_parallel(to_sort, indices):
 
     return [x for _, x in sorted(zip(indices, to_sort))]
 
-if __name__ == "__main__":
+def get_model_scores(namingData, foci_data):
+    ACE_performances = []
+    FE_performances = []
+    FP_performances = []
+    FE_beats_FP = 0
+    FP_beats_FE = 0
+    
+    for LANGUAGE in range(1, 111):
+        print(f"--------------------- Language {LANGUAGE} ---------------------------")
+        print()
+        pmap = prob_map(namingData, LANGUAGE)
+        cmap = consolidate_map(pmap)
+        
+        # BASELINE
+        baseline = evaluate(cmap, pmap)
+        print(f"{baseline} - BASELINE")
+        print()
+        
+        # ALL CELLS EXEMPLAR
+        ACE = evaluate(all_cells_exemplar_predict(cmap), pmap)
+        print(f"{ACE} - ALL-CELLS EXEMPLAR")
+        print()
+        ACE_performances.append(ACE / baseline)
+        
+        # FOCI EXEMPLAR
+        foci_exemplars = make_foci_exemplars(foci_data, LANGUAGE)
+        FE = evaluate(foci_exemplar_predict(foci_exemplars), pmap)
+        print(f"{FE} - FOCI EXEMPLAR")
+        print()
+        FE_performances.append(FE / baseline)
+        
+        # FOCI PROTOTYPE
+        foci_prototypes = make_foci_prototypes(foci_exemplars)
+        FP = evaluate(foci_prototype_predict(foci_prototypes), pmap)
+        print(f"{FP} - FOCI PROTOTYPE")
+        print()
+        FP_performances.append(FP / baseline)
+    return ACE_performances, FE_performances, FP_performances
+
+def pipeline(naming_data, foci_data, language):
+
+    outputs = {}
+
+    # generate probability map
+    pmap = prob_map(naming_data, language)
+    outputs['pmap'] = pmap
+
+    # generate consolidated map
+    cmap = consolidate_map(pmap)
+    outputs['cmap'] = cmap
+
+    # generate all cells exemplar output map
+    ACE_map = all_cells_exemplar_predict(cmap)
+    outputs['ACE'] = ACE_map
+
+    # generate foci exemplar output map
+    foci_exemplars = make_foci_exemplars(foci_data, language)
+    FE_map = foci_exemplar_predict(foci_exemplars)
+    outputs['FE'] = FE_map
+
+    # generate foci prototype output map
+    foci_prototypes  = make_foci_prototypes(foci_exemplars)
+    FP_map = foci_prototype_predict(foci_prototypes)
+    outputs['FP'] = FP_map
+
+    return outputs
+
+def calculate_performance_scores(outputs):
+    performance_scores = {'ACE' : [], 'FE' : [], 'FP' : []}
+    for language in outputs:
+        baseline = evaluate(outputs[language]['cmap'], outputs[language]['pmap'])
+        ace_performance = evaluate(outputs[language]['ACE'], outputs[language]['pmap'])
+        fe_performance = evaluate(outputs[language]['FE'], outputs[language]['pmap'])
+        fp_performance = evaluate(outputs[language]['FP'], outputs[language]['pmap'])
+
+        performance_scores['ACE'].append(ace_performance / baseline)
+        performance_scores['FE'].append(fe_performance / baseline)
+        performance_scores['FP'].append(fp_performance / baseline)
+
+    return performance_scores
+
+def prepare_and_plot_sorted_scores(performance_scores, foci_data):
 
     term_sizes_list = []
-    languages = []
     for language in range(1, 111):
         term_sizes_list.append(len(universal_terms(foci_data, language)))
-        languages.append(language)
-    
-    # each performance list is sorted such that the ith performance value corresponds
-    # to the language with the ith smallest number of terms
-    sorted_ace = sort_in_parallel(ACE_performances, term_sizes_list)
-    sorted_fe = sort_in_parallel(FE_performances, term_sizes_list)
-    sorted_fp = sort_in_parallel(FP_performances, term_sizes_list)
-    sorted_languages = sort_in_parallel(languages, term_sizes_list)
+        
+    sorted_ace = sort_in_parallel(performance_scores['ACE'], term_sizes_list)
+    sorted_fe = sort_in_parallel(performance_scores['FE'], term_sizes_list)
+    sorted_fp = sort_in_parallel(performance_scores['FP'], term_sizes_list)
 
-    # plotted against range 1 -> 111 to spread out and visualize sorted performance values
     spread = range(1, 111)
     scatter_ace = plt.scatter(spread, sorted_ace)
     scatter_fe = plt.scatter(spread, sorted_fe)
     scatter_fp = plt.scatter(spread, sorted_fp)
 
-    # line of best fit for performance for all 3 models
     m_ace, b_ace = line_of_best_fit(spread, sorted_ace)
     best_fit_ace = np.dot(m_ace, spread) + b_ace
     corr_ace, p_ace = sps.pearsonr(best_fit_ace, sorted_ace)
-    plt.plot(spread, best_fit_ace)
 
     m_fe, b_fe = line_of_best_fit(spread, sorted_fe)
     best_fit_fe = np.dot(m_fe, spread) + b_fe
     corr_fe, p_fe = sps.pearsonr(best_fit_fe, sorted_fe)
-    plt.plot(spread, best_fit_fe)
 
     m_fp, b_fp = line_of_best_fit(spread, sorted_fp)
     best_fit_fp = np.dot(m_fp, spread) + b_fp
     corr_fp, p_fp = sps.pearsonr(best_fit_fp, sorted_fp)
+    
+    plt.plot(spread, best_fit_ace)
+    plt.plot(spread, best_fit_fe)
     plt.plot(spread, best_fit_fp)
 
-    print("All Cells Exemplar model performance params : {}, correlation coefficient : {}, p-value : {}".format([m_ace, b_ace], corr_ace, p_ace))
-    print("Foci Exemplar model performance params : {}, correlation coefficient : {}, p-value : {}".format([m_fe, b_fe], corr_fe, p_fe))
-    print("Foci Prototype model performance params : {}, correlation coefficient : {}, p-value : {}".format([m_fp, b_fp], corr_fp, p_fp))
+    print("All Cells Exemplar model performance [slope, intercept] : {}, correlation coefficient : {}, p-value : {}".format([m_ace, b_ace], corr_ace, p_ace))
+    print("Foci Exemplar model performance [slope, intercept] : {}, correlation coefficient : {}, p-value : {}".format([m_fe, b_fe], corr_fe, p_fe))
+    print("Foci Prototype model performance [slope, intercept] : {}, correlation coefficient : {}, p-value : {}".format([m_fp, b_fp], corr_fp, p_fp))
 
     # define legend and plot
     plt.legend((scatter_ace, scatter_fe, scatter_fp),
@@ -71,7 +146,75 @@ if __name__ == "__main__":
            loc='lower left',
            ncol=3,
            fontsize=8)
-
+    plt.title("Model Performance by Language ")
+    plt.xlabel("Languages")
+    plt.ylabel("Model Performance")
     plt.show()
+    
+
+if __name__ == "__main__":
+    # outputs_by_language = {}
+    # for language in range(1, 111):
+    #     print("Language - {}".format(language))
+    #     outputs = pipeline(namingData, foci_data, 1)
+    #     outputs_by_language[language] = outputs
+    # performance_scores = calculate_performance_scores(outputs_by_language)
+    # ACE_performances, FE_performances, FP_performances = get_model_scores(namingData, foci_data)
+    # print(ACE_performances)
+    # print("-------------------------------------------")
+    # print(FE_performances)
+    # print("-------------------------------------------")
+    # print(FP_performances)
+    # print("-------------------------------------------")
+    prepare_and_plot_sorted_scores({'ACE' : ACE_performances, 'FE' : FE_performances, 'FP' : FP_performances}, foci_data)
+
+    # term_sizes_list = []
+    # languages = []
+    # for language in range(1, 111):
+    #     term_sizes_list.append(len(universal_terms(foci_data, language)))
+    #     languages.append(language)
+    
+    # # each performance list is sorted such that the ith performance value corresponds
+    # # to the language with the ith smallest number of terms
+    # sorted_ace = sort_in_parallel(ACE_performances, term_sizes_list)
+    # sorted_fe = sort_in_parallel(FE_performances, term_sizes_list)
+    # sorted_fp = sort_in_parallel(FP_performances, term_sizes_list)
+    # sorted_languages = sort_in_parallel(languages, term_sizes_list)
+
+    # # plotted against range 1 -> 111 to spread out and visualize sorted performance values
+    # spread = range(1, 111)
+    # scatter_ace = plt.scatter(spread, sorted_ace)
+    # scatter_fe = plt.scatter(spread, sorted_fe)
+    # scatter_fp = plt.scatter(spread, sorted_fp)
+
+    # # line of best fit for performance for all 3 models
+    # m_ace, b_ace = line_of_best_fit(spread, sorted_ace)
+    # best_fit_ace = np.dot(m_ace, spread) + b_ace
+    # corr_ace, p_ace = sps.pearsonr(best_fit_ace, sorted_ace)
+    # plt.plot(spread, best_fit_ace)
+
+    # m_fe, b_fe = line_of_best_fit(spread, sorted_fe)
+    # best_fit_fe = np.dot(m_fe, spread) + b_fe
+    # corr_fe, p_fe = sps.pearsonr(best_fit_fe, sorted_fe)
+    # plt.plot(spread, best_fit_fe)
+
+    # m_fp, b_fp = line_of_best_fit(spread, sorted_fp)
+    # best_fit_fp = np.dot(m_fp, spread) + b_fp
+    # corr_fp, p_fp = sps.pearsonr(best_fit_fp, sorted_fp)
+    # plt.plot(spread, best_fit_fp)
+
+    # print("All Cells Exemplar model performance [slope, intercept] : {}, correlation coefficient : {}, p-value : {}".format([m_ace, b_ace], corr_ace, p_ace))
+    # print("Foci Exemplar model performance [slope, intercept] : {}, correlation coefficient : {}, p-value : {}".format([m_fe, b_fe], corr_fe, p_fe))
+    # print("Foci Prototype model performance [slope, intercept] : {}, correlation coefficient : {}, p-value : {}".format([m_fp, b_fp], corr_fp, p_fp))
+
+    # # define legend and plot
+    # plt.legend((scatter_ace, scatter_fe, scatter_fp),
+    #        ('ACE', 'FE', 'FP'),
+    #        scatterpoints=1,
+    #        loc='lower left',
+    #        ncol=3,
+    #        fontsize=8)
+
+    # plt.show()
 
     
