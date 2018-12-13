@@ -20,7 +20,7 @@ if __name__ == '__main__':
     # language 25 is a language where the foci prototype model outperforms the foci exemplar model
     # language 35 is a language where the foci exemplar model outperforms the foci prototype model
     # this code snippet generates the predicted map for all 3 models and displays them on screen
-    for language in [25, 35]:
+    for language in [36, 38]:
         outputs = pipeline(namingData, foci_data, language)
         title1 = 'CMAP | Language ' + str(language)
         title2 = 'FE Prediction | Language ' + str(language)
